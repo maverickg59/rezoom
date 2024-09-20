@@ -1,5 +1,5 @@
 // import { useState } from "react";
-import { Upload } from "./components/Upload";
+import { SingleFileUploader } from "./components/Uploader";
 import "./App.css";
 
 function App() {
@@ -8,7 +8,7 @@ function App() {
   return (
     <>
       <h1 className="text-3xl font-bold">Rezoom</h1>
-      <Upload />
+      <SingleFileUploader />
     </>
   );
 }

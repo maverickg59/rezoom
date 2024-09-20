@@ -1,9 +1,38 @@
 import { useState } from "react";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 
-export function Upload() {
-  const [file, setFile] = useState<File | null>();
-
+export function SingleFileUploader() {
+  const [file, setFile] = useState<File | null>(null);
+  const [key, resetKey] = useState(Math.random());
+  const generateUniqueKey = (key: number) => {
+    const random = Math.random();
+    if (random === key) {
+      generateUniqueKey(key);
+    }
+    return random;
+  };
+  async function uploadFile() {
+    const url = "http://127.0.0.1:5000/api/file/upload";
+    const formData = new FormData();
+    if (file instanceof Blob) {
+      formData.append("file", file);
+    }
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+      const json = await response.json();
+      console.log(json);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+    }
+  }
   return (
     <form>
       <div className="space-y-12">
@@ -30,15 +59,15 @@ export function Upload() {
                       <span>Upload your resume</span>
                       <input
                         id="file-upload"
+                        key={key}
                         name="file-upload"
                         type="file"
                         accept=".pdf,.docx"
                         className="sr-only"
-                        // value={file}
                         onChange={(e) => {
                           if (!e.currentTarget.files) return;
                           setFile(e.currentTarget.files[0]);
-                          console.log(file);
+                          resetKey(generateUniqueKey(key));
                         }}
                       />
                     </label>
@@ -70,12 +99,17 @@ export function Upload() {
           <button
             type="button"
             className="text-sm font-semibold leading-6 text-white"
+            onClick={() => setFile(null)}
           >
             Delete
           </button>
           <button
             type="submit"
             className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+            onClick={(e) => {
+              e.preventDefault();
+              uploadFile();
+            }}
           >
             Submit
           </button>
