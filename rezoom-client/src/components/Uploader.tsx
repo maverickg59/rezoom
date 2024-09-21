@@ -1,38 +1,22 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { PhotoIcon } from "@heroicons/react/24/solid";
+import { generateUniqueKey } from "../lib/helpers";
 
-export function SingleFileUploader() {
-  const [file, setFile] = useState<File | null>(null);
-  const [key, resetKey] = useState(Math.random());
-  const generateUniqueKey = (key: number) => {
-    const random = Math.random();
-    if (random === key) {
-      generateUniqueKey(key);
-    }
-    return random;
-  };
-  async function uploadFile() {
-    const url = "http://127.0.0.1:5000/api/file/upload";
-    const formData = new FormData();
-    if (file instanceof Blob) {
-      formData.append("file", file);
-    }
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        body: formData,
-      });
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
-      const json = await response.json();
-      console.log(json);
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
-    }
-  }
+type Props = {
+  key: number;
+  file: File | null;
+  handleFileUpload: () => void;
+  setKey: Dispatch<SetStateAction<number>>;
+  setFile: Dispatch<SetStateAction<File | null>>;
+};
+
+export function SingleFileUploader({
+  file,
+  setFile,
+  key,
+  setKey,
+  handleFileUpload,
+}: Readonly<Props>) {
   return (
     <form>
       <div className="space-y-12">
@@ -43,7 +27,7 @@ export function SingleFileUploader() {
                 htmlFor="cover-photo"
                 className="block text-sm font-medium leading-6 text-white"
               >
-                Resume
+                Upload Your Resume
               </label>
               <div className="mt-2 flex justify-center rounded-lg border border-dashed border-white/25 px-6 py-10">
                 <div className="text-center">
@@ -67,7 +51,7 @@ export function SingleFileUploader() {
                         onChange={(e) => {
                           if (!e.currentTarget.files) return;
                           setFile(e.currentTarget.files[0]);
-                          resetKey(generateUniqueKey(key));
+                          setKey(generateUniqueKey(key));
                         }}
                       />
                     </label>
@@ -94,27 +78,27 @@ export function SingleFileUploader() {
         </div>
       )}
 
-      {file && (
-        <div className="mt-6 flex items-center justify-end gap-x-6">
-          <button
-            type="button"
-            className="text-sm font-semibold leading-6 text-white"
-            onClick={() => setFile(null)}
-          >
-            Delete
-          </button>
-          <button
-            type="submit"
-            className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-            onClick={(e) => {
-              e.preventDefault();
-              uploadFile();
-            }}
-          >
-            Submit
-          </button>
-        </div>
-      )}
+      {/* {file && ( */}
+      <div className="mt-6 flex items-center justify-end gap-x-6">
+        <button
+          type="button"
+          className="text-sm font-semibold leading-6 text-white"
+          onClick={() => setFile(null)}
+        >
+          Delete
+        </button>
+        <button
+          type="submit"
+          className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+          onClick={(e) => {
+            e.preventDefault();
+            handleFileUpload();
+          }}
+        >
+          Submit
+        </button>
+      </div>
+      {/* )} */}
     </form>
   );
 }

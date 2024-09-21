@@ -43,6 +43,10 @@ def handle_file():
             return _corsify_actual_response(jsonify({"hi": "hi"})), 200
     else:
         raise RuntimeError("Weird - don't know how to handle method {}".format(request.method))
+    
+@app.route('/api/listing/scrape', methods=["POST"])
+def scrape():
+    print(request.data)
 
 # Run the application
 if __name__ == '__main__':
