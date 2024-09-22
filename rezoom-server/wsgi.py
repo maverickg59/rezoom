@@ -1,4 +1,5 @@
 import os
+from random import random, seed
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from flask import Flask, request, jsonify, make_response
@@ -46,18 +47,37 @@ def handle_file():
     else:
         raise RuntimeError("Weird - don't know how to handle method {}".format(request.method))
     
+def scrape_listing():
+    options = webdriver.ChromeOptions()
+    options.page_load_strategy = 'normal'
+    driver = webdriver.Chrome(options=options)
+    driver.get(request.form.get('job_listing'))
+    content = driver.page_source
+    soup = BeautifulSoup(content, "html.parser")
+    driver.quit()
+    return soup
+
+def generate_random_float_as_string():
+    seed()
+    return str(random())
+
+def generate_file_path(random):
+    save_path = './uploads/'
+    file_name = f'{random}_listing.txt'
+    return os.path.join(save_path, file_name)
+
 @app.route('/api/listing/scrape', methods=["POST", "OPTIONS"])
-def scrape():
+def write_to_file():
     if request.method == "OPTIONS":
         return _build_cors_preflight_response()
+    
     elif request.method == "POST":
-        options = webdriver.ChromeOptions()
-        options.page_load_strategy = 'normal'
-        driver = webdriver.Chrome(options=options)
-        driver.get(request.form.get('job_listing'))
-        content = driver.page_source
-        soup = BeautifulSoup(content, "html.parser")
-        print(soup.prettify())
+        random = generate_random_float_as_string()
+        path = generate_file_path(random)
+        listing = scrape_listing()
+        print(random, path)
+        with open(path, "w") as file:
+            file.write(str(listing))
         return _corsify_actual_response(jsonify({"hi": "hi"})), 200
 
 # Run the application
