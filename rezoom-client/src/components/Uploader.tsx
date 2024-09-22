@@ -1,22 +1,19 @@
-import { Dispatch, SetStateAction } from "react";
+import { useState, Dispatch, SetStateAction } from "react";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import { generateUniqueKey } from "../lib/helpers";
 
 type Props = {
-  key: number;
   file: File | null;
   handleFileUpload: () => void;
-  setKey: Dispatch<SetStateAction<number>>;
   setFile: Dispatch<SetStateAction<File | null>>;
 };
 
 export function SingleFileUploader({
   file,
   setFile,
-  key,
-  setKey,
   handleFileUpload,
 }: Readonly<Props>) {
+  const [key, setKey] = useState(Math.random());
   return (
     <form>
       <div className="space-y-12">
@@ -51,7 +48,6 @@ export function SingleFileUploader({
                         onChange={(e) => {
                           if (!e.currentTarget.files) return;
                           setFile(e.currentTarget.files[0]);
-                          setKey(generateUniqueKey(key));
                         }}
                       />
                     </label>
@@ -83,7 +79,10 @@ export function SingleFileUploader({
         <button
           type="button"
           className="text-sm font-semibold leading-6 text-white"
-          onClick={() => setFile(null)}
+          onClick={() => {
+            setKey(generateUniqueKey(key));
+            setFile(null);
+          }}
         >
           Delete
         </button>

@@ -5,7 +5,6 @@ import "./App.css";
 
 function App() {
   const [file, setFile] = useState<File | null>(null);
-  const [key, setKey] = useState(Math.random());
   const [listingUrl, setListingUrl] = useState(
     "https://www.ziprecruiter.com/c/HARBOR-OBJECTS/Job/Software-Engineer/-in-Irvine,CA?jid=83f79333f701fc1d"
   );
@@ -63,8 +62,6 @@ function App() {
       <SingleFileUploader
         file={file}
         setFile={setFile}
-        key={key}
-        setKey={setKey}
         handleFileUpload={handleFileUpload}
       />
       <ScraperForm

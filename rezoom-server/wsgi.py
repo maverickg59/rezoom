@@ -1,7 +1,9 @@
 import os
+from bs4 import BeautifulSoup
+from selenium import webdriver
 from flask import Flask, request, jsonify, make_response
-from pypdf import PdfReader
 from werkzeug.utils import secure_filename
+from pypdf import PdfReader
 
 UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = {'pdf', 'docx'}
@@ -44,9 +46,19 @@ def handle_file():
     else:
         raise RuntimeError("Weird - don't know how to handle method {}".format(request.method))
     
-@app.route('/api/listing/scrape', methods=["POST"])
+@app.route('/api/listing/scrape', methods=["POST", "OPTIONS"])
 def scrape():
-    print(request.data)
+    if request.method == "OPTIONS":
+        return _build_cors_preflight_response()
+    elif request.method == "POST":
+        options = webdriver.ChromeOptions()
+        options.page_load_strategy = 'normal'
+        driver = webdriver.Chrome(options=options)
+        driver.get(request.form.get('job_listing'))
+        content = driver.page_source
+        soup = BeautifulSoup(content, "html.parser")
+        print(soup.prettify())
+        return _corsify_actual_response(jsonify({"hi": "hi"})), 200
 
 # Run the application
 if __name__ == '__main__':
