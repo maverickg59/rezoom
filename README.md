@@ -1,6 +1,6 @@
 The goal is to build an app that tailors your resume to a job listing. We first load, parse, edit, and finalize the existing resume. We then scrape and parse the job listing. The application then leverages NLP and LLM to match bullet points to requirements and rewrite your resume.
 
-<!-- MVP -->
+# MVP Road Map
 
 - create db models
   - user
@@ -55,7 +55,7 @@ The goal is to build an app that tailors your resume to a job listing. We first 
     - certifications: array of objects
     - work experience: array of objects
 
-<!-- 1.0.0 -->
+# 1.0.0 Road Map
 
 - auth
 - cover letters
