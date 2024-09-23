@@ -57,13 +57,23 @@ def scrape_listing():
     driver.quit()
     return soup
 
+def parse_relevant_content(soup):
+    tags = ['script', 'style', 'noscript', 'meta', 'head', 'button', 'footer']
+    classes = ['related_links', 'report_job_modal', 'breadcrumbs', 'apply_section_zds_section', 'email_exists', 'universal_footer']
+    onion_soup = soup.find(class_='site_content')
+    for tag in onion_soup.find_all(class_=classes):
+        tag.decompose()
+    for tag in onion_soup(tags):
+        tag.decompose()
+    return onion_soup
+
 def generate_random_float_as_string():
     seed()
     return str(random())
 
 def generate_file_path(random):
     save_path = './uploads/'
-    file_name = f'{random}_listing.txt'
+    file_name = f'{random}_listing.html'
     return os.path.join(save_path, file_name)
 
 @app.route('/api/listing/scrape', methods=["POST", "OPTIONS"])
@@ -75,9 +85,12 @@ def write_to_file():
         random = generate_random_float_as_string()
         path = generate_file_path(random)
         listing = scrape_listing()
-        print(random, path)
+        
+        # parse listing for body element
+        relevant_content = parse_relevant_content(listing)
+
         with open(path, "w") as file:
-            file.write(str(listing))
+            file.write(str(relevant_content))
         return _corsify_actual_response(jsonify({"hi": "hi"})), 200
 
 # Run the application
