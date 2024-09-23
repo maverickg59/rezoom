@@ -43,7 +43,9 @@ def handle_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
             return _corsify_actual_response(jsonify({"hi": "hi"})), 200
+        
     else:
         raise RuntimeError("Weird - don't know how to handle method {}".format(request.method))
     
@@ -85,13 +87,14 @@ def write_to_file():
         random = generate_random_float_as_string()
         path = generate_file_path(random)
         listing = scrape_listing()
-        
-        # parse listing for body element
         relevant_content = parse_relevant_content(listing)
-
         with open(path, "w") as file:
             file.write(str(relevant_content))
+
         return _corsify_actual_response(jsonify({"hi": "hi"})), 200
+    
+    else:
+        raise RuntimeError("Weird - don't know how to handle method {}".format(request.method))
 
 # Run the application
 if __name__ == '__main__':
