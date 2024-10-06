@@ -1,4 +1,6 @@
-The goal is to build an app that tailors your resume to a job listing. We first load, parse, edit, and finalize the existing resume. We then scrape and parse the job listing. The application then leverages NLP and LLM to match bullet points to requirements and rewrite your resume.
+move away from flask and use Fast API
+
+The goal is to build an app that tailors your resume to a job listing. We first load, parse, edit, and finalize the existing resume. We then scrape and parse the job listing. The application then leverages LLM to match bullet points to requirements and rewrite your resume.
 
 # MVP Road Map
 
